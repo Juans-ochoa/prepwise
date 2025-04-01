@@ -38,7 +38,11 @@ const Home = async () => {
         <div className="interviews-section">
           {hasPastInterviews ? (
             userInterviews.map((interview) => (
-              <InterviewCard key={interview.id} {...interview} />
+              <InterviewCard
+                key={interview.id}
+                {...interview}
+                interviewId={interview.id}
+              />
             ))
           ) : (
             <p>You haven&apos;t taken any interviews yet</p>

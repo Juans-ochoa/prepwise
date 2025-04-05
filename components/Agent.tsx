@@ -12,8 +12,8 @@ import { useEffect, useRef, useState } from "react";
 enum CallStatus {
   INACTIVE = "INACTIVE",
   CONNECTING = "CONNECTING",
-  ACTIVATE = "ACTIVATE",
   FINISHED = "FINISHED",
+  ACTIVE = "ACTIVE",
 }
 
 interface SavedMessage {
@@ -38,7 +38,7 @@ const Agent = ({
 
   useEffect(() => {
     const onCallStart = () => {
-      setCallStatus(CallStatus.ACTIVATE);
+      setCallStatus(CallStatus.ACTIVE);
     };
 
     const onCallEnd = () => {
@@ -48,23 +48,22 @@ const Agent = ({
     const onMessage = (message: Message) => {
       if (message.type === "transcript" && message.transcriptType === "final") {
         const newMessage = { role: message.role, content: message.transcript };
-
-        setMessages((prev) => ({ ...prev, newMessage }));
+        setMessages((prev) => [...prev, newMessage]);
       }
     };
 
     const onSpeechStart = () => {
-      console.log("Speech Start");
+      console.log("speech start");
       setIsSpeaking(true);
     };
 
     const onSpeechEnd = () => {
-      console.log("Speech end");
+      console.log("speech end");
       setIsSpeaking(false);
     };
 
     const onError = (error: Error) => {
-      console.log("Error: ", error);
+      console.log("Error:", error);
     };
 
     vapi.on("call-start", onCallStart);
@@ -90,7 +89,8 @@ const Agent = ({
     }
 
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-      console.log(messages);
+      console.log("handleGenerateFeedback");
+
       const { success, feedbackId: id } = await createFeedback({
         interviewId: interviewId!,
         userId: userId!,
@@ -99,9 +99,9 @@ const Agent = ({
       });
 
       if (success && id) {
-        router.current.push(`/interview/${id}/feedback`);
+        router.current.push(`/interview/${interviewId}/feedback`);
       } else {
-        console.error("Error saving feedback");
+        console.log("Error saving feedback");
         router.current.push("/");
       }
     };
@@ -113,7 +113,6 @@ const Agent = ({
         handleGenerateFeedback(messages);
       }
     }
-    return () => {};
   }, [messages, callStatus, feedbackId, interviewId, type, userId]);
 
   const handleCall = async () => {
@@ -128,7 +127,6 @@ const Agent = ({
       });
     } else {
       let formattedQuestions = "";
-
       if (questions) {
         formattedQuestions = questions
           .map((question) => `- ${question}`)
@@ -195,7 +193,7 @@ const Agent = ({
       )}
 
       <div className="w-full flex justify-center">
-        {callStatus !== "ACTIVATE" ? (
+        {callStatus !== "ACTIVE" ? (
           <button className="relative btn-call" onClick={() => handleCall()}>
             <span
               className={cn(

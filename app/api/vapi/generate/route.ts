@@ -1,14 +1,15 @@
-import { db } from "@/firebase/admin";
-import { getRandomInterviewCover } from "@/lib/utils";
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import { db } from '@/firebase/admin';
+import { getRandomInterviewCover } from '@/lib/utils';
+import { google } from '@ai-sdk/google';
+import { generateText } from 'ai';
 
 export async function POST(req: Request) {
   const { type, role, level, techstack, amount, userid } = await req.json();
+  console.error({ userid });
 
   try {
     const { text: questions } = await generateText({
-      model: google("gemini-2.0-flash-001"),
+      model: google('gemini-2.0-flash-001'),
       prompt: `Prepare questions for a job interview.
       The job role is ${role}.
       The job experience level is ${level}.
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
       role,
       type,
       level,
-      techstack: techstack.split(","),
+      techstack: techstack.split(','),
       questions: JSON.parse(questions),
       finalized: false,
       userId: userid,
@@ -36,27 +37,27 @@ export async function POST(req: Request) {
       createdAt: new Date().toISOString(),
     };
 
-    await db.collection("interviews").add(interview);
+    await db.collection('interviews').add(interview);
 
     return Response.json(
       {
         success: true,
-        message: "Interview generated successfully",
+        message: 'Interview generated successfully',
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error(error);
     return Response.json(
       {
         success: false,
-        message: "Failed to generate interview",
+        message: 'Failed to generate interview',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function GET() {
-  return Response.json({ success: true, message: "Thank you!" });
+  return Response.json({ success: true, message: 'Thank you!' });
 }

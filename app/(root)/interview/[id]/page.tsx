@@ -1,10 +1,10 @@
-import Agent from "@/components/Agent";
-import DisplayTechIcons from "@/components/DisplayTechIcons";
-import { getCurrentUser } from "@/lib/actions/auth.actions";
-import { getInterviewById } from "@/lib/actions/general.actions";
-import { getRandomInterviewCover } from "@/lib/utils";
-import Image from "next/image";
-import { redirect } from "next/navigation";
+import Agent from '@/components/Agent';
+import DisplayTechIcons from '@/components/DisplayTechIcons';
+import { getCurrentUser } from '@/lib/actions/auth.actions';
+import { getInterviewById } from '@/lib/actions/general.actions';
+import { getRandomInterviewCover } from '@/lib/utils';
+import Image from 'next/image';
+import { redirect } from 'next/navigation';
 
 const Page = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -13,7 +13,7 @@ const Page = async ({ params }: RouteParams) => {
 
   const interview = await getInterviewById(id);
 
-  if (!interview) return redirect("/");
+  if (!interview) return redirect('/');
 
   return (
     <>
@@ -25,7 +25,7 @@ const Page = async ({ params }: RouteParams) => {
               alt="cover-image"
               width={40}
               height={40}
-              className="rounded-full object-cover size-[40px]"
+              className="rounded-full object-cover size-10"
             />
             <h3 className="capitalize">{interview.role} Interview</h3>
           </div>
